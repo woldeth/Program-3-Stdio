@@ -41,36 +41,38 @@ int main(int argc, char *argv[])
 	int retval = fstat(3, &file_state);
 	printf( "fstat = %d, file size = %d\n", retval, file_state.st_size );
 	
-	// printf("Testing feof...\n"); // GOOD
-	// int eof = feof(file_r);
-	// printf("EOF = %d\n", eof); 
+	printf("Testing feof...\n"); // GOOD
+	int eof = feof(file_r);
+	printf("EOF = %d\n", eof); 
 
-	// // setvbuf test // GOOD
-	// printf( "Testing setvbuf...\n" );
-	// char vbuf[40];
-	// setvbuf( file_r, vbuf, _IOFBF, 40 );
+	// setvbuf test // GOOD
+	printf( "Testing setvbuf...\n" );
+	char vbuf[40];
+	setvbuf( file_r, vbuf, _IOFBF, 40 );
 
-	// char buf[100];
-	// int nRead;
-	//fread test GOOD
-	// printf("Testing fread...\n");
+	char buf[100];
+	int nRead;
+	//fread test  // good 
+	printf("Testing fread...\n");
 	// while ((nRead = fread(buf, 1, 100, file_r)) > 0)
 	// {
 	// 	write(1, buf, nRead);
 	// }
 
-	//fseek test
-	printf("Testing fseek...\n");
-	fseek(file_r, 0, SEEK_SET);
+	//fseek test -> need help for fseek
+	// printf("Testing fseek...\n");
+	// fseek(file_r, 0, SEEK_SET);
 
-	printf("I AM DONE WITH FIRST TEST \n");
+	//printf("I AM DONE WITH FIRST TEST \n");
 
-	// // fgets test
-	// printf("Testing fgets...\n");
-	// while (fgets(buf, 100, file_r) != NULL)
-	// {
-	// 	write(1, buf, strlen(buf));
-	// }
+	// fgets test
+	printf("Testing fgets...\n");
+	while (fgets(buf, 100, file_r) != NULL)
+	{
+		write(1, buf, strlen(buf));
+	}
+
+	printf("I AM DONE");
 	
 	// // fgetc test
 	// printf( "Testing fgetc...\n" );

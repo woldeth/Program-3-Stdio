@@ -253,8 +253,13 @@ int fputc(int c, FILE *stream)
 
 char *fgets(char *str, int size, FILE *stream)
 {
-    // complete it
-    return NULL;
+    size_t bytesRead = read(stream->fd, str, size);
+
+    if (bytesRead == 0) {
+        return NULL;
+    } else {
+        return str;
+    }
 }
 
 int fputs(const char *str, FILE *stream)
