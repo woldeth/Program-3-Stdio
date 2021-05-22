@@ -229,11 +229,12 @@ int fpurge(FILE *stream)
 
 int fflush(FILE *stream)
 {
-    if(stream->eof){
+    if (stream->eof)
+    {
         return EOF;
     }
-   
-    write(stream->fd, &stream->buffer[stream->pos] ,stream->actual_size - stream->pos);
+
+    write(stream->fd, &stream->buffer[stream->pos], stream->actual_size - stream->pos);
     fpurge(stream);
 
     return 0;
@@ -247,11 +248,11 @@ void clear(void *ptr, int size)
 
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-    if(stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND) ){
+    if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    {
         printf("FILE CAN NOT READ\n");
         return -1;
     }
-                   
 
     //clear(ptr, nmemb);
     if (stream->eof)
@@ -355,18 +356,39 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-    // comlete it
+    if (stream->flag == (O_RDONLY) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    {
+        printf("FILE CAN NOT READ\n");
+        return -1;
+    }
+
+    // number of byetes request by the user
+    int bytesToWrite = size * nmemb;
+
+    stream->pos = 0;
+
+    char *buf = (char *)ptr;
+    int sizeOfPtr = strlen(buf);
+
+
+    memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+
+
+
+
     return 0;
 }
 
 int fgetc(FILE *stream)
 {
-    if(stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND) ){
-        printf("FILE CAN NOT READ\n");
-        return -1;
-    }
+    // if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    // {
+    //     printf("FILE CAN NOT READ\n");
+    //     return -1;
+    // }
 
-    if(stream->eof){
+    if (stream->eof)
+    {
         return EOF;
     }
 
@@ -374,7 +396,8 @@ int fgetc(FILE *stream)
 
     int bytesRead = fread(buf, 1, 1, stream);
 
-    if(bytesRead >= 0){
+    if (bytesRead >= 0)
+    {
         char c = buf[0];
         return c;
     }
@@ -390,10 +413,11 @@ int fputc(int c, FILE *stream)
 
 char *fgets(char *str, int size, FILE *stream)
 {
-    if(stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND) ){
-        printf("FILE CAN NOT READ\n");
-        return NULL;
-    }
+    // if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    // {
+    //     printf("FILE CAN NOT READ\n");
+    //     return NULL;
+    // }
 
     int bytesRead = fread(str, 1, size, stream);
 
@@ -402,12 +426,12 @@ char *fgets(char *str, int size, FILE *stream)
 
     str[bytesRead] = '\0';
 
-    if(bytesRead > 0){
+    if (bytesRead > 0)
+    {
         return ptr;
     }
 
     return NULL;
-    
 }
 
 int fputs(const char *str, FILE *stream)
@@ -456,16 +480,16 @@ int fclose(FILE *stream)
     fflush(stream);
     fpurge(stream);
 
-     stream->fd = 0;
-     stream->pos = 0;
-     stream->buffer = (char *) 0;
-     stream->size = 0;
-     stream->actual_size = 0;
-     stream->mode = _IONBF;
-     stream->flag = 0;
-     stream->bufown = false;
-     stream->lastop = 0;
-     stream->eof = false;
+    stream->fd = 0;
+    stream->pos = 0;
+    stream->buffer = (char *)0;
+    stream->size = 0;
+    stream->actual_size = 0;
+    stream->mode = _IONBF;
+    stream->flag = 0;
+    stream->bufown = false;
+    stream->lastop = 0;
+    stream->eof = false;
 
     return 0;
 }
