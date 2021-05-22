@@ -23,7 +23,8 @@ class FILE
      lastop = 0;
      eof = false;
   }
-
+  
+   void clear(void *ptr, int size);
 
   int fd;          // a Unix file descriptor of an opened file
   int pos;         // the current file position in the buffer

@@ -223,39 +223,44 @@ FILE *fopen(const char *path, const char *mode)
 // }
 int fpurge(FILE *stream)
 {
-    if (stream != NULL)
-    {
-        stream->fd = 0;
-        stream->pos = 0;
-        stream->buffer = (char *)0;
-        stream->size = 0;
-        stream->actual_size = 0;
-        stream->mode = _IONBF;
-        stream->flag = 0;
-        stream->bufown = false;
-        stream->lastop = 0;
-        stream->eof = false;
-    }
-
+    memset(stream->buffer, '\0', stream->size);
     return 0;
 }
 
 int fflush(FILE *stream)
 {
-    // comlete it
+    if(stream->eof){
+        return EOF;
+    }
+   
+    write(stream->fd, &stream->buffer[stream->pos] ,stream->actual_size - stream->pos);
+    fpurge(stream);
+
     return 0;
+}
+
+void clear(void *ptr, int size)
+{
+
+    memset(ptr, '\0', size);
 }
 
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
+    if(stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND) ){
+        printf("FILE CAN NOT READ\n");
+        return -1;
+    }
+                   
 
+    //clear(ptr, nmemb);
     if (stream->eof)
     {
         return -1;
     }
 
     // number of byetes request by the user
-    size_t bytesRequest = size * nmemb;
+    int bytesRequest = size * nmemb;
 
     // if buffer is empty of we have reached the end of the buffer
     if (*stream->buffer == '\0')
@@ -263,58 +268,87 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
         // reset the pos
         stream->pos = 0;
 
-        // read to the buffer and reaturn the actual amount of bytes read
+        // read to the buffer and reaturn the actual amount of bytes read //8k
+        fpurge(stream);
         stream->actual_size = read(stream->fd, stream->buffer, stream->size);
+        //printf("STREAM ACTUAL SIZE: %d", stream->actual_size);
 
         // copy the bytes over to the driver file
-        char* buf = (char*)ptr;
+        char *buf = (char *)ptr;
+        memset(buf, '\0', bytesRequest);
 
-        memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
-        stream->pos = stream->pos + bytesRequest;
-
-
-    } else if (stream->pos != 0 && stream->pos < (stream->actual_size - bytesRequest)){
+        // if buffer is really small compared to request
+        if (bytesRequest >= stream->actual_size)
+        {
+            memcpy(buf, &stream->buffer[stream->pos], stream->actual_size);
+            stream->pos = stream->pos + stream->actual_size;
+        }
+        else
+        {
+            memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
+            stream->pos = stream->pos + bytesRequest;
+        }
+    }
+    else if ((stream->pos != 0) && (stream->pos <= (stream->actual_size - bytesRequest)))
+    {
 
         // copy the bytes over to the driver file
-        char* buf = (char*)ptr;
+        char *buf = (char *)ptr;
+        memset(buf, '\0', bytesRequest);
         memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
         stream->pos = stream->pos + bytesRequest;
+    }
+    else if (stream->pos > (stream->actual_size - bytesRequest) && stream->pos < stream->actual_size)
+    {
 
-        //printf("1");
+        char *buf = (char *)ptr;
+        memset(buf, '\0', bytesRequest);
 
-    } else if (stream->pos > (stream->actual_size - bytesRequest) && stream->pos < stream->actual_size ){
-
-        char* buf = (char*)ptr;
         memcpy(buf, &stream->buffer[stream->pos], (stream->actual_size - stream->pos));
-
         //move the postion on of the file
         stream->pos = stream->pos + (stream->actual_size - stream->pos);
-        //printf("2");
 
-    } else if (stream->pos >= stream->actual_size){
+        //flag = true;
+    }
+    else if (stream->pos >= stream->actual_size)
+    {
 
         // reset the pos
         stream->pos = 0;
 
         // read to the buffer and reaturn the actual amount of bytes read
+        //fpurge(stream);
         stream->actual_size = read(stream->fd, stream->buffer, stream->size);
 
         // copy the bytes over to the driver file
-        char* buf = (char*)ptr;
-        memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
+        char *buf = (char *)ptr;
+        memset(buf, '\0', bytesRequest);
 
-        //move the postion on of the file
-        stream->pos = stream->pos + bytesRequest;
-        //printf("3");
-
-
+        // if buffer is really small compared to request
+        if (bytesRequest >= stream->actual_size)
+        {
+            memcpy(buf, &stream->buffer[stream->pos], stream->actual_size);
+            stream->pos = stream->pos + stream->actual_size;
+        }
+        else
+        {
+            memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
+            stream->pos = stream->pos + bytesRequest;
+        }
     }
 
     // end of file if everything is not read
-    if(stream->actual_size < stream->size){
+    if (stream->actual_size == 0)
+    {
         stream->eof = true;
+        return -1;
     }
-    
+
+    if (stream->actual_size == stream->pos)
+    {
+
+        return stream->actual_size % bytesRequest;
+    }
 
     return bytesRequest / size;
 }
@@ -327,8 +361,25 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 
 int fgetc(FILE *stream)
 {
-    // complete it
-    return 0;
+    if(stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND) ){
+        printf("FILE CAN NOT READ\n");
+        return -1;
+    }
+
+    if(stream->eof){
+        return EOF;
+    }
+
+    char buf[1];
+
+    int bytesRead = fread(buf, 1, 1, stream);
+
+    if(bytesRead >= 0){
+        char c = buf[0];
+        return c;
+    }
+
+    return EOF;
 }
 
 int fputc(int c, FILE *stream)
@@ -339,7 +390,24 @@ int fputc(int c, FILE *stream)
 
 char *fgets(char *str, int size, FILE *stream)
 {
-    read(stream->fd, str, size);
+    if(stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND) ){
+        printf("FILE CAN NOT READ\n");
+        return NULL;
+    }
+
+    int bytesRead = fread(str, 1, size, stream);
+
+    char x = 'A';
+    char *ptr = &x;
+
+    str[bytesRead] = '\0';
+
+    if(bytesRead > 0){
+        return ptr;
+    }
+
+    return NULL;
+    
 }
 
 int fputs(const char *str, FILE *stream)
@@ -353,33 +421,51 @@ int feof(FILE *stream)
     return stream->eof == true;
 }
 
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
+// #define SEEK_SET 0
+// #define SEEK_CUR 1
+// #define SEEK_END 2
 
 int fseek(FILE *stream, long offset, int whence)
 {
+    // Sets postion to the begging of buffer
+    if (whence == SEEK_SET)
+    {
+        stream->pos = 0;
+        return 0;
+    }
 
-    // if ((stream->flag & _UNBUF) == 0 && base != NULL)
-    // {
-    //     /* deal with buffering */
-    //     if (stream->flag & _WRITE)
-    //     {
-    //         /* writing, so flush buffer */
-    //         fflush(stream); /* from 8-3 */
-    //     }
-    //     else if (stream->flag & _READ)
-    //     {
-    //         /* reading, so trash buffer */
-    //         stream->cnt = 0;
-    //         f->ptr = f->base;
-    //     }
-    // }
-    // return (lseek(f->fd, offset, whence) < 0);
+    // Sets postion to the given location
+    if (whence == SEEK_CUR)
+    {
+        stream->pos = offset;
+        return 0;
+    }
+
+    // Sets position to the end of the buffer
+    if (whence == SEEK_END)
+    {
+        stream->pos = stream->actual_size;
+        return 0;
+    }
+
+    return -1;
 }
 
 int fclose(FILE *stream)
 {
-    // complete it
+    fflush(stream);
+    fpurge(stream);
+
+     stream->fd = 0;
+     stream->pos = 0;
+     stream->buffer = (char *) 0;
+     stream->size = 0;
+     stream->actual_size = 0;
+     stream->mode = _IONBF;
+     stream->flag = 0;
+     stream->bufown = false;
+     stream->lastop = 0;
+     stream->eof = false;
+
     return 0;
 }

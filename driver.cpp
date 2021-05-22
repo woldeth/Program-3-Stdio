@@ -46,51 +46,50 @@ int main(int argc, char *argv[])
 	//printf("EOF = %d\n", eof); 
 
 	// // setvbuf test // GOOD
-	// printf( "Testing setvbuf...\n" );
+	//printf( "Testing setvbuf...\n" );
 	// char vbuf[40];
 	// setvbuf( file_r, vbuf, _IOFBF, 40 );
 
-	char buf[100];
-	int nRead;
-	//fread test  // good 
-	//printf("Testing fread...\n");
-	while ((nRead = fread(buf, 1, 100, file_r)) > 0)
-	{
-		write(1, buf, nRead);
-	}
+	// char buf[100];
+	// int nRead;
+	// //fread test  // good 
+	// printf("Testing fread...\n");
+	// while ((nRead = fread(buf, 1, 100, file_r)) > 0)
+	// {
+	// 	write(1, buf, nRead);
+	// }
 
-	//fseek test -> need help for fseek
-	// printf("Testing fseek...\n");
+	// //fseek test -> need help for fseek
+	//printf("Testing fseek...\n");
 	// fseek(file_r, 0, SEEK_SET);
 
-	//printf("I AM DONE WITH FIRST TEST \n");
 
-	// // fgets test
-	// printf("Testing fgets...\n");
+	// fgets test
+	//printf("Testing fgets...\n");
 	// while (fgets(buf, 100, file_r) != NULL)
 	// {
-	// 	//write(1, buf, strlen(buf));
+	// 	write(1, buf, strlen(buf));
 	// }
 	
 	// // fgetc test
 	// printf( "Testing fgetc...\n" );
-	// fseek(file_r, -file_state.st_size, SEEK_END);
-	// char c;
-	// while ((c = fgetc(file_r)) != EOF)
-	// {
-	// 	write(1, &c, 1);
-	// }
+	//fseek(file_r, -file_state.st_size, SEEK_END);
+	char c;
+	while ((c = fgetc(file_r)) != EOF)
+	{
+		write(1, &c, 1);
+	}
 	
 	// // feof test
 	// printf("Testing feof...\n");
 	// eof = feof(file_r);
 	// printf("EOF = %d\n", eof); 
 	
-	// // fclose test
-	// printf("Testing fclose...\n");
-	// fclose(file_r);
-	// retval = fstat(3, &file_state);
-	// printf("fstat = %d\n", retval);
+	// fclose test
+	printf("Testing fclose...\n");
+	fclose(file_r);
+	retval = fstat(3, &file_state);
+	printf("fstat = %d\n", retval);
 
 	// // fopen test
 	// printf("Testing fopen(w)...\n");

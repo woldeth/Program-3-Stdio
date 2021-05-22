@@ -261,7 +261,7 @@ Do you consent we shall acquaint him with it,
 As needful in our loves, fitting our duty?
 MARCELLUS 
 Let's do't, I pray; and I this morning know
-Where we shall find him most cg our duonveniently.
+Where we shall find him most conveniently.
 Exeunt
 SCENE II. A room of state in the castle.
 Enter KING CLAUDIUS, QUEEN GERTRUDE, HAMLET, POLONIUS, LAERTES, VOLTIMAND, CORNELIUS, Lords, and Attendants 
@@ -469,7 +469,7 @@ HAMLET
 I would not hear your enemy say so,
 Nor shall you do mine ear that violence,
 To make it truster of your own report
-Against yourself: I know you aou do mire no truant.
+Against yourself: I know you are no truant.
 But what is your affair in Elsinore?
 We'll teach you to drink deep ere you depart.
 HORATIO 
@@ -728,7 +728,7 @@ LAERTES
 Farewell.
 Exit
 LORD POLONIUS 
-What is't, Ophelia, be hath said to yeep the ou?
+What is't, Ophelia, be hath said to you?
 OPHELIA 
 So please you, something touching the Lord Hamlet.
 LORD POLONIUS 
@@ -982,8 +982,7 @@ Ghost
 I find thee apt;
 And duller shouldst thou be than the fat weed
 That roots itself in ease on Lethe wharf,
-Wouldst;
-And t thou not stir in this. Now, Hamlet, hear:
+Wouldst thou not stir in this. Now, Hamlet, hear:
 'Tis given out that, sleeping in my orchard,
 A serpent stung me; so the whole ear of Denmark
 Is by a forged process of my death
@@ -1237,7 +1236,7 @@ But, if't be he I mean, he's very wild;
 Addicted so and so:' and there put on him
 What forgeries you please; marry, none so rank
 As may dishonour him; take heed of that;
-But, sir, such wanton, wiyou pleald and usual slips
+But, sir, such wanton, wild and usual slips
 As are companions noted and most known
 To youth and liberty.
 REYNALDO 
@@ -1478,7 +1477,7 @@ Receives rebuke from Norway, and in fine
 Makes vow before his uncle never more
 To give the assay of arms against your majesty.
 Whereon old Norway, overcome with joy,
-Gives him three thousand crowns arms again annual fee,
+Gives him three thousand crowns in annual fee,
 And his commission to employ those soldiers,
 So levied as before, against the Polack:
 With an entreaty, herein further shown,
@@ -1735,8 +1734,6 @@ ROSENCRANTZ
 Then is the world one.
 HAMLET 
 A goodly one; in which there are many confines,
-on.
-ROS
 wards and dungeons, Denmark being one o' the worst.
 ROSENCRANTZ 
 We think not so, my lord.
@@ -1970,7 +1967,7 @@ and then, you know,
 the first row of the pious chanson will show you
 more; for look, where my abridgement comes.
 Enter four or five Players
-You aranson wie welcome, masters; welcome, all. I am glad
+You are welcome, masters; welcome, all. I am glad
 to see thee well. Welcome, good friends. O, my old
 friend! thy face is valenced since I saw thee last:
 comest thou to beard me in Denmark? What, my young
@@ -2178,8 +2175,7 @@ I'll tent him to the quick: if he but blench,
 I know my course. The spirit that I have seen
 May be the devil: and the devil hath power
 To assume a pleasing shape; yea, and perhaps
-Out of my
-May be  weakness and my melancholy,
+Out of my weakness and my melancholy,
 As he is very potent with such spirits,
 Abuses me to damn me: I'll have grounds
 More relative than this: the play 's the thing
@@ -2414,7 +2410,7 @@ Re-enter KING CLAUDIUS and POLONIUS
 KING CLAUDIUS 
 Love! his affections do not that way tend;
 Nor what he spake, though it lack'd form a little,
-Was not like madness. There's somethinay tend;g in his soul,
+Was not like madness. There's something in his soul,
 O'er which his melancholy sits on brood;
 And I do doubt the hatch and the disclose
 Will be some danger: which for to prevent,
@@ -2630,7 +2626,7 @@ then; or else shall he suffer not thinking on, with
 the hobby-horse, whose epitaph is 'For, O, for, O,
 the hobby-horse is forgot.'
 Hautboys play. The dumb-show enters
-Enter a King and a Queen very lovingly; the Queen embracing him, and he her. She kneels, and makes show of protestation unto him. He takes her up, and declines his head upon her neck: lays him down upon a bank of flowers: she, seeing him asleep, leaves him. Anon comes in a fellow, takes off his crown, kisses it, and pours poison in the King's ears, and exit. The Queen returns; finds the King dead, and makes passionate action. The Poisoner, with some two or three Mutes, comes in agathe Kingin, seeming to lament with her. The dead body is carried away. The Poisoner wooes the Queen with gifts: she seems loath and unwilling awhile, but in the end accepts his love
+Enter a King and a Queen very lovingly; the Queen embracing him, and he her. She kneels, and makes show of protestation unto him. He takes her up, and declines his head upon her neck: lays him down upon a bank of flowers: she, seeing him asleep, leaves him. Anon comes in a fellow, takes off his crown, kisses it, and pours poison in the King's ears, and exit. The Queen returns; finds the King dead, and makes passionate action. The Poisoner, with some two or three Mutes, comes in again, seeming to lament with her. The dead body is carried away. The Poisoner wooes the Queen with gifts: she seems loath and unwilling awhile, but in the end accepts his love
 Exeunt
 OPHELIA 
 What means this, my lord?
@@ -2882,8 +2878,7 @@ Nay, good my lord, this courtesy is not of the right
 breed. If it shall please you to make me a
 wholesome answer, I will do your mother's
 commandment: if not, your pardon and my return
-shame a
-whll be the end of my business.
+shall be the end of my business.
 HAMLET 
 Sir, I cannot.
 GUILDENSTERN 
@@ -3118,7 +3113,7 @@ This physic but prolongs thy sickly days.
 Exit
 KING CLAUDIUS 
 [Rising] My words fly up, my thoughts remain below:
-Wordss thy si without thoughts never to heaven go.
+Words without thoughts never to heaven go.
 Exit
 SCENE IV. The Queen's closet.
 Enter QUEEN MARGARET and POLONIUS 
@@ -3361,7 +3356,7 @@ That to the use of actions fair and good
 He likewise gives a frock or livery,
 That aptly is put on. Refrain to-night,
 And that shall lend a kind of easiness
-To thk or live next abstinence: the next more easy;
+To the next abstinence: the next more easy;
 For use almost can change the stamp of nature,
 And either [ ] the devil, or throw him out
 With wondrous potency. Once more, good night:
@@ -3601,7 +3596,7 @@ Which we do tender, as we dearly grieve
 For that which thou hast done,--must send thee hence
 With fiery quickness: therefore prepare thyself;
 The bark is ready, and the wind at help,
-The associates tend, and every thingore prep is bent
+The associates tend, and every thing is bent
 For England.
 HAMLET 
 For England!
@@ -3856,8 +3851,7 @@ Without the which we are pictures, or mere beasts:
 Last, and as much containing as all these,
 Her brother is in secret come from France;
 Feeds on his wonder, keeps himself in clouds,
-Anhese,
-Hd wants not buzzers to infect his ear
+And wants not buzzers to infect his ear
 With pestilent speeches of his father's death;
 Wherein necessity, of matter beggar'd,
 Will nothing stick our person to arraign
@@ -4110,7 +4104,7 @@ So crimeful and so capital in nature,
 As by your safety, wisdom, all things else,
 You mainly were stirr'd up.
 KING CLAUDIUS 
-O, for two special reasonty, wisds;
+O, for two special reasons;
 Which may to you, perhaps, seem much unsinew'd,
 But yet to me they are strong. The queen his mother
 Lives almost by his looks; and for myself--
@@ -4335,7 +4329,7 @@ Unto that element: but long it could not be
 Till that her garments, heavy with their drink,
 Pull'd the poor wretch from her melodious lay
 To muddy death.
-LAarments,ERTES 
+LAERTES 
 Alas, then, she is drown'd?
 QUEEN GERTRUDE 
 Drown'd, drown'd.
@@ -4593,7 +4587,7 @@ How long will a man lie i' the earth ere he rot?
 First Clown 
 I' faith, if he be not rotten before he die--as we
 have many pocky corses now-a-days, that will scarce
-hold the laying in--he will last yodie--as u some eight year
+hold the laying in--he will last you some eight year
 or nine year: a tanner will last you nine year.
 HAMLET 
 Why he more than another?
@@ -4843,7 +4837,7 @@ A baseness to write fair and labour'd much
 How to forget that learning, but, sir, now
 It did me yeoman's service: wilt thou know
 The effect of what I wrote?
-H learninORATIO 
+HORATIO 
 Ay, good my lord.
 HAMLET 
 An earnest conjuration from the king,
@@ -5087,7 +5081,7 @@ gain-giving, as would perhaps trouble a woman.
 HORATIO 
 If your mind dislike any thing, obey it: I will
 forestall their repair hither, and say you are not
-fiyour mint.
+fit.
 HAMLET 
 Not a whit, we defy augury: there's a special
 providence in the fall of a sparrow. If it be now,
@@ -5358,8 +5352,7 @@ But since, so jump upon this bloody question,
 You from the Polack wars, and you from England,
 Are here arrived give order that these bodies
 High on a stage be placed to the view;
-And ngland,
-let me speak to the yet unknowing world
+And let me speak to the yet unknowing world
 How these things came about: so shall you hear
 Of carnal, bloody, and unnatural acts,
 Of accidental judgments, casual slaughters,
@@ -5390,7 +5383,4 @@ Take up the bodies: such a sight as this
 Becomes the field, but here shows much amiss.
 Go, bid the soldiers shoot.
 A dead march. Exeunt, bearing off the dead bodies; after which a peal of ordnance is shot off
-ot.
-A dead march. Exeunt, bearing off the dead bodies; after which a let me speak to the yet unknowing world
-How these things came about: so shall you hear
-Of carnal, 
+EOF = 1
