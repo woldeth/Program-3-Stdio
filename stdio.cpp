@@ -210,10 +210,10 @@ FILE *fopen(const char *path, const char *mode)
     return stream;
 }
 
-
 int fpurge(FILE *stream)
 {
     memset(stream->buffer, '\0', stream->size);
+    stream->pos = 0;
     return 0;
 }
 
@@ -230,7 +230,7 @@ int fflush(FILE *stream)
         return EOF;
     }
 
-    write(stream->fd, &stream->buffer[stream->pos], stream->pos);
+    write(stream->fd, stream->buffer, stream->pos);
     fpurge(stream);
 
     return 0;
@@ -362,25 +362,39 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
     int bytesToWrite = size * nmemb;
 
     // if buffer is empty copy over the the buffer passed in from position 0
-    if(*stream->buffer == '\0'){
-   
+    if (*stream->buffer == '\0')
+    {
+
         char *buf = (char *)ptr;
         stream->pos = 0;
         memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
         stream->pos = stream->pos + bytesToWrite;
-
-    }else if((stream->pos != 0) && (stream->pos <= (stream->size - bytesToWrite))){
-
+    }
+    else if ((stream->pos != 0) && (stream->pos <= (stream->size - bytesToWrite)))
+    {
+        char *buf = (char *)ptr;
         memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
         stream->pos = stream->pos + bytesToWrite;
 
-    }else if(stream->pos > (stream->size - bytesToWrite) && stream->pos < stream->size){
-
+        if (stream->pos >= stream->size)
+        {
+            fflush(stream);
+        }
+    }
+    else if (stream->pos > (stream->size - bytesToWrite) && stream->pos < stream->size)
+    {
         fflush(stream);
+        char *buf = (char *)ptr;
         write(stream->fd, buf, bytesToWrite);
         stream->pos = stream->pos + bytesToWrite;
-
-        //STOPPED RIGHT HERE !
+    }
+    else if (stream->pos >= stream->size)
+    {
+        fflush(stream);
+        stream->pos = 0;
+        char *buf = (char *)ptr;
+        memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+        stream->pos = stream->pos + bytesToWrite;
     }
 
     return 0;
@@ -414,7 +428,17 @@ int fgetc(FILE *stream)
 
 int fputc(int c, FILE *stream)
 {
-    // complete it
+    if (stream->flag == (O_RDONLY))
+    {
+        printf("FILE CAN NOT WRITE\n");
+        return -1;
+    }
+
+    char buf[1];
+    buf[0] = c;
+    //size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
+    fwrite(buf, 1, 1, stream);
+
     return 0;
 }
 
@@ -443,7 +467,17 @@ char *fgets(char *str, int size, FILE *stream)
 
 int fputs(const char *str, FILE *stream)
 {
-    // complete it
+    if (stream->flag == (O_RDONLY))
+    {
+        printf("FILE CAN NOT WRITE\n");
+        return -1;
+    }
+
+    //size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
+
+    fwrite(str, 1, strlen(str), stream);
+    //fflush(stream);
+
     return 0;
 }
 
@@ -451,8 +485,6 @@ int feof(FILE *stream)
 {
     return stream->eof == true;
 }
-
-
 
 int fseek(FILE *stream, long offset, int whence)
 {
@@ -482,7 +514,11 @@ int fseek(FILE *stream, long offset, int whence)
 
 int fclose(FILE *stream)
 {
-    fflush(stream);
+    if (stream->flag != (O_RDONLY))
+    {
+        fflush(stream);
+    }
+
     close(stream->fd);
     return 0;
 }
