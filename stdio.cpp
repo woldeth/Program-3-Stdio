@@ -412,10 +412,9 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
             stream->pos = stream->pos + bytesToWrite;
         }
     }else {
-        printf("I am not buffered!!!!");
+       
         char *buf = (char *)ptr;
-        write(stream->fd, buf, bytesToWrite);
-            
+        write(stream->fd, buf, bytesToWrite);   
     }
 
     return 0;
