@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	// fopen test // GOOD
 	//printf("Testing fopen(r)...\n");
 	//FILE *file_r = fopen(argv[1], "r");
-	//FILE *file_r = fopen("hamlet.txt", "r");
+	FILE *file_r = fopen("hamlet.txt", "r");
 	struct stat file_state;
 	int retval = fstat(3, &file_state);
 	//printf( "fstat = %d, file size = %d\n", retval, file_state.st_size );
@@ -50,14 +50,14 @@ int main(int argc, char *argv[])
 	// char vbuf[40];
 	// setvbuf( file_r, vbuf, _IOFBF, 40 );
 
-	// char buf[100];
-	// int nRead;
+	char buf[100];
+	int nRead;
 	// //fread test  // good 
 	// //printf("Testing fread...\n");
-	// while ((nRead = fread(buf, 1, 100, file_r)) > 0)
-	// {
-	// 	write(1, buf, nRead);
-	// }
+	while ((nRead = fread(buf, 1, 100, file_r)) > 0)
+	{
+		write(1, buf, nRead);
+	}
 
 	// //fseek test -> need help for fseek
 	//printf("Testing fseek...\n");
@@ -73,12 +73,12 @@ int main(int argc, char *argv[])
 	
 	// // fgetc test
 	// printf( "Testing fgetc...\n" );
-	//fseek(file_r, -file_state.st_size, SEEK_END);
-	// char c;
-	// while ((c = fgetc(file_r)) != EOF)
-	// {
-	// 	write(1, &c, 1);
-	// }
+	fseek(file_r, -file_state.st_size, SEEK_END);
+	char c;
+	while ((c = fgetc(file_r)) != EOF)
+	{
+		write(1, &c, 1);
+	}
 	
 	// // feof test
 	// printf("Testing feof...\n");

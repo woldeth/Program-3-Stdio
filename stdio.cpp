@@ -210,17 +210,7 @@ FILE *fopen(const char *path, const char *mode)
     return stream;
 }
 
-// int fpurge(FILE *stream)
-// {
-//     check if stream is NULL
-//     // clear the buffer of the given stream
-//     set buffer to \0
-//     // clear any unwritten output
-//     set position to 0
-//     // clear any input read in from object
-//     set size to 0
-//     return 0;
-// }
+
 int fpurge(FILE *stream)
 {
     memset(stream->buffer, '\0', stream->size);
@@ -229,12 +219,18 @@ int fpurge(FILE *stream)
 
 int fflush(FILE *stream)
 {
+    if (stream->flag == (O_RDONLY))
+    {
+        //printf("FILE CAN NOT WRITE\n");
+        return -1;
+    }
+
     if (stream->eof)
     {
         return EOF;
     }
 
-    write(stream->fd, &stream->buffer[stream->pos], stream->actual_size - stream->pos);
+    write(stream->fd, &stream->buffer[stream->pos], stream->pos);
     fpurge(stream);
 
     return 0;
@@ -356,36 +352,47 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-    if (stream->flag == (O_RDONLY) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    if (stream->flag == (O_RDONLY))
     {
-        printf("FILE CAN NOT READ\n");
+        printf("FILE CAN NOT WRITE\n");
         return -1;
     }
 
     // number of byetes request by the user
     int bytesToWrite = size * nmemb;
 
-    stream->pos = 0;
+    // if buffer is empty copy over the the buffer passed in from position 0
+    if(*stream->buffer == '\0'){
+   
+        char *buf = (char *)ptr;
+        stream->pos = 0;
+        memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+        stream->pos = stream->pos + bytesToWrite;
 
-    char *buf = (char *)ptr;
-    int sizeOfPtr = strlen(buf);
+    }else if((stream->pos != 0) && (stream->pos <= (stream->size - bytesToWrite))){
 
+        memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+        stream->pos = stream->pos + bytesToWrite;
 
-    memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+    }else if(stream->pos > (stream->size - bytesToWrite) && stream->pos < stream->size){
 
+        fflush(stream);
+        write(stream->fd, buf, bytesToWrite);
+        stream->pos = stream->pos + bytesToWrite;
 
-
+        //STOPPED RIGHT HERE !
+    }
 
     return 0;
 }
 
 int fgetc(FILE *stream)
 {
-    // if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
-    // {
-    //     printf("FILE CAN NOT READ\n");
-    //     return -1;
-    // }
+    if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    {
+        printf("FILE CAN NOT READ\n");
+        return -1;
+    }
 
     if (stream->eof)
     {
@@ -413,11 +420,11 @@ int fputc(int c, FILE *stream)
 
 char *fgets(char *str, int size, FILE *stream)
 {
-    // if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
-    // {
-    //     printf("FILE CAN NOT READ\n");
-    //     return NULL;
-    // }
+    if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
+    {
+        printf("FILE CAN NOT READ\n");
+        return NULL;
+    }
 
     int bytesRead = fread(str, 1, size, stream);
 
@@ -445,9 +452,7 @@ int feof(FILE *stream)
     return stream->eof == true;
 }
 
-// #define SEEK_SET 0
-// #define SEEK_CUR 1
-// #define SEEK_END 2
+
 
 int fseek(FILE *stream, long offset, int whence)
 {
@@ -478,18 +483,6 @@ int fseek(FILE *stream, long offset, int whence)
 int fclose(FILE *stream)
 {
     fflush(stream);
-    fpurge(stream);
-
-    stream->fd = 0;
-    stream->pos = 0;
-    stream->buffer = (char *)0;
-    stream->size = 0;
-    stream->actual_size = 0;
-    stream->mode = _IONBF;
-    stream->flag = 0;
-    stream->bufown = false;
-    stream->lastop = 0;
-    stream->eof = false;
-
+    close(stream->fd);
     return 0;
 }
