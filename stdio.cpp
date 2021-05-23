@@ -259,92 +259,104 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
     // number of byetes request by the user
     int bytesRequest = size * nmemb;
 
-    // if buffer is empty of we have reached the end of the buffer
-    if (*stream->buffer == '\0')
+    if (stream->mode == _IOFBF)
     {
-        // reset the pos
-        stream->pos = 0;
-
-        // read to the buffer and reaturn the actual amount of bytes read //8k
-        fpurge(stream);
-        stream->actual_size = read(stream->fd, stream->buffer, stream->size);
-        //printf("STREAM ACTUAL SIZE: %d", stream->actual_size);
-
-        // copy the bytes over to the driver file
-        char *buf = (char *)ptr;
-        memset(buf, '\0', bytesRequest);
-
-        // if buffer is really small compared to request
-        if (bytesRequest >= stream->actual_size)
+        // if buffer is empty of we have reached the end of the buffer
+        if (*stream->buffer == '\0')
         {
-            memcpy(buf, &stream->buffer[stream->pos], stream->actual_size);
-            stream->pos = stream->pos + stream->actual_size;
+            // reset the pos
+            stream->pos = 0;
+
+            // read to the buffer and reaturn the actual amount of bytes read //8k
+            fpurge(stream);
+            stream->actual_size = read(stream->fd, stream->buffer, stream->size);
+            //printf("STREAM ACTUAL SIZE: %d", stream->actual_size);
+
+            // copy the bytes over to the driver file
+            char *buf = (char *)ptr;
+            memset(buf, '\0', bytesRequest);
+
+            // if buffer is really small compared to request
+            if (bytesRequest >= stream->actual_size)
+            {
+                memcpy(buf, &stream->buffer[stream->pos], stream->actual_size);
+                stream->pos = stream->pos + stream->actual_size;
+            }
+            else
+            {
+                memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
+                stream->pos = stream->pos + bytesRequest;
+            }
         }
-        else
+        else if ((stream->pos != 0) && (stream->pos <= (stream->actual_size - bytesRequest)))
         {
+
+            // copy the bytes over to the driver file
+            char *buf = (char *)ptr;
+            memset(buf, '\0', bytesRequest);
             memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
             stream->pos = stream->pos + bytesRequest;
         }
-    }
-    else if ((stream->pos != 0) && (stream->pos <= (stream->actual_size - bytesRequest)))
-    {
-
-        // copy the bytes over to the driver file
-        char *buf = (char *)ptr;
-        memset(buf, '\0', bytesRequest);
-        memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
-        stream->pos = stream->pos + bytesRequest;
-    }
-    else if (stream->pos > (stream->actual_size - bytesRequest) && stream->pos < stream->actual_size)
-    {
-
-        char *buf = (char *)ptr;
-        memset(buf, '\0', bytesRequest);
-
-        memcpy(buf, &stream->buffer[stream->pos], (stream->actual_size - stream->pos));
-        //move the postion on of the file
-        stream->pos = stream->pos + (stream->actual_size - stream->pos);
-
-        //flag = true;
-    }
-    else if (stream->pos >= stream->actual_size)
-    {
-
-        // reset the pos
-        stream->pos = 0;
-
-        // read to the buffer and reaturn the actual amount of bytes read
-        //fpurge(stream);
-        stream->actual_size = read(stream->fd, stream->buffer, stream->size);
-
-        // copy the bytes over to the driver file
-        char *buf = (char *)ptr;
-        memset(buf, '\0', bytesRequest);
-
-        // if buffer is really small compared to request
-        if (bytesRequest >= stream->actual_size)
+        else if (stream->pos > (stream->actual_size - bytesRequest) && stream->pos < stream->actual_size)
         {
-            memcpy(buf, &stream->buffer[stream->pos], stream->actual_size);
-            stream->pos = stream->pos + stream->actual_size;
+
+            char *buf = (char *)ptr;
+            memset(buf, '\0', bytesRequest);
+
+            memcpy(buf, &stream->buffer[stream->pos], (stream->actual_size - stream->pos));
+            //move the postion on of the file
+            stream->pos = stream->pos + (stream->actual_size - stream->pos);
+
+            //flag = true;
         }
-        else
+        else if (stream->pos >= stream->actual_size)
         {
-            memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
-            stream->pos = stream->pos + bytesRequest;
+
+            // reset the pos
+            stream->pos = 0;
+
+            // read to the buffer and reaturn the actual amount of bytes read
+            //fpurge(stream);
+            stream->actual_size = read(stream->fd, stream->buffer, stream->size);
+
+            // copy the bytes over to the driver file
+            char *buf = (char *)ptr;
+            memset(buf, '\0', bytesRequest);
+
+            // if buffer is really small compared to request
+            if (bytesRequest >= stream->actual_size)
+            {
+                memcpy(buf, &stream->buffer[stream->pos], stream->actual_size);
+                stream->pos = stream->pos + stream->actual_size;
+            }
+            else
+            {
+                memcpy(buf, &stream->buffer[stream->pos], bytesRequest);
+                stream->pos = stream->pos + bytesRequest;
+            }
+        }
+
+        // end of file if everything is not read
+        if (stream->actual_size == 0)
+        {
+            stream->eof = true;
+            return -1;
+        }
+
+        if (stream->actual_size == stream->pos)
+        {
+
+            return stream->actual_size % bytesRequest;
         }
     }
-
-    // end of file if everything is not read
-    if (stream->actual_size == 0)
+    else if (stream->mode == _IONBF)
     {
-        stream->eof = true;
-        return -1;
-    }
+        //printf("NOT BUFFERED");
 
-    if (stream->actual_size == stream->pos)
-    {
+        char *buf = (char *)ptr;
+        int bytesRead = read(stream->fd, buf, bytesRequest);
 
-        return stream->actual_size % bytesRequest;
+        return bytesRead / size;
     }
 
     return bytesRequest / size;
@@ -361,40 +373,49 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
     // number of byetes request by the user
     int bytesToWrite = size * nmemb;
 
-    // if buffer is empty copy over the the buffer passed in from position 0
-    if (*stream->buffer == '\0')
+    if (stream->mode == _IOFBF)
     {
 
-        char *buf = (char *)ptr;
-        stream->pos = 0;
-        memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
-        stream->pos = stream->pos + bytesToWrite;
-    }
-    else if ((stream->pos != 0) && (stream->pos <= (stream->size - bytesToWrite)))
-    {
-        char *buf = (char *)ptr;
-        memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
-        stream->pos = stream->pos + bytesToWrite;
+        // if buffer is empty copy over the the buffer passed in from position 0
+        if (*stream->buffer == '\0')
+        {
 
-        if (stream->pos >= stream->size)
+            char *buf = (char *)ptr;
+            stream->pos = 0;
+            memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+            stream->pos = stream->pos + bytesToWrite;
+        }
+        else if ((stream->pos != 0) && (stream->pos <= (stream->size - bytesToWrite)))
+        {
+            char *buf = (char *)ptr;
+            memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+            stream->pos = stream->pos + bytesToWrite;
+
+            if (stream->pos >= stream->size)
+            {
+                fflush(stream);
+            }
+        }
+        else if (stream->pos > (stream->size - bytesToWrite) && stream->pos < stream->size)
         {
             fflush(stream);
+            char *buf = (char *)ptr;
+            write(stream->fd, buf, bytesToWrite);
+            stream->pos = stream->pos + bytesToWrite;
         }
-    }
-    else if (stream->pos > (stream->size - bytesToWrite) && stream->pos < stream->size)
-    {
-        fflush(stream);
+        else if (stream->pos >= stream->size)
+        {
+            fflush(stream);
+            stream->pos = 0;
+            char *buf = (char *)ptr;
+            memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
+            stream->pos = stream->pos + bytesToWrite;
+        }
+    }else {
+        printf("I am not buffered!!!!");
         char *buf = (char *)ptr;
         write(stream->fd, buf, bytesToWrite);
-        stream->pos = stream->pos + bytesToWrite;
-    }
-    else if (stream->pos >= stream->size)
-    {
-        fflush(stream);
-        stream->pos = 0;
-        char *buf = (char *)ptr;
-        memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
-        stream->pos = stream->pos + bytesToWrite;
+            
     }
 
     return 0;
