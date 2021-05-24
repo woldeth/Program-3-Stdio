@@ -213,7 +213,7 @@ FILE *fopen(const char *path, const char *mode)
 int fpurge(FILE *stream)
 {
     memset(stream->buffer, '\0', stream->size);
-    stream->pos = 0;
+   // stream->pos = 0;
     return 0;
 }
 
@@ -232,6 +232,7 @@ int fflush(FILE *stream)
 
     write(stream->fd, stream->buffer, stream->pos);
     fpurge(stream);
+    stream->pos = 0;
 
     return 0;
 }
@@ -508,28 +509,22 @@ int feof(FILE *stream)
 
 int fseek(FILE *stream, long offset, int whence)
 {
-    // Sets postion to the begging of buffer
-    if (whence == SEEK_SET)
-    {
-        stream->pos = 0;
-        return 0;
+    if(stream->actual_size > 0){
+        fflush(stream);
     }
 
-    // Sets postion to the given location
-    if (whence == SEEK_CUR)
-    {
-        stream->pos = offset;
-        return 0;
+    if(whence == SEEK_CUR){
+        int newOffset = stream->actual_size - stream->pos;
+
+        lseek(stream->fd, offset - newOffset, whence);
+    }else{
+        lseek(stream->fd, offset, whence);
     }
 
-    // Sets position to the end of the buffer
-    if (whence == SEEK_END)
-    {
-        stream->pos = stream->actual_size;
-        return 0;
-    }
+    fpurge(stream);
 
-    return -1;
+    return 0;
+
 }
 
 int fclose(FILE *stream)
