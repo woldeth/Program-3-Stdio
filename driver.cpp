@@ -26,7 +26,7 @@ char *init_data()
 
 int main(int argc, char *argv[]) 
 {
-	// validate the arguments
+	//validate the arguments
 	if ( argc != 2 ) 
 	{
 		printf( "usage: driver filename\n" );
@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 	// fopen test
 	printf("Testing fopen(r)...\n");
 	FILE *file_r = fopen(argv[1], "r");
+	//FILE *file_r = fopen("hamlet.txt", "r");
 	struct stat file_state;
 	int retval = fstat(3, &file_state);
 	printf( "fstat = %d, file size = %d\n", retval, file_state.st_size );
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 	
 	// fseek test
 	printf("Testing fseek...\n");
-	fseek(file_r, 0, SEEK_SET);
+	fseek(file_r, 0, SEEK_SET);  // good for this
 
 	// fgets test
 	printf("Testing fgets...\n");
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 	retval = fstat(3, &file_state);
 	printf("fstat = %d\n", retval);
 
-	// fopen test
+	// // fopen test
 	printf("Testing fopen(w)...\n");
 	FILE *file_w1 = fopen("test1.txt", "w");
 	FILE *file_w2 = fopen("test2.txt", "w");

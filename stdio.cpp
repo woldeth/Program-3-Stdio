@@ -509,20 +509,24 @@ int feof(FILE *stream)
 
 int fseek(FILE *stream, long offset, int whence)
 {
-    if(stream->actual_size > 0){
+    if(stream->buffer[0] != '\0'){
         fflush(stream);
     }
 
     if(whence == SEEK_CUR){
         int newOffset = stream->actual_size - stream->pos;
-
+        
         lseek(stream->fd, offset - newOffset, whence);
     }else{
         lseek(stream->fd, offset, whence);
     }
 
+    stream->pos = 0 ;
+
     fpurge(stream);
 
+    stream->eof = false;
+    
     return 0;
 
 }
