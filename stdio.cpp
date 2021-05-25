@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------
+// Name: Tomas H Woldemichael
+// Date: May 25th, 2021
+// File Name: driver.cpp
+// Title: PROGRAM 3
+// -------------------------------------------------------------------------
+// This code is the main file for the main driver. This program replicates the
+// standard I/O built in library.
+//
+//---------------------------------------------------------------------------
+
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -213,7 +224,7 @@ FILE *fopen(const char *path, const char *mode)
 int fpurge(FILE *stream)
 {
     memset(stream->buffer, '\0', stream->size);
-   // stream->pos = 0;
+    stream->pos = 0;
     return 0;
 }
 
@@ -221,7 +232,6 @@ int fflush(FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
     {
-        //printf("FILE CAN NOT WRITE\n");
         return -1;
     }
 
@@ -245,11 +255,19 @@ void clear(void *ptr, int size)
 
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
+
     if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
     {
         printf("FILE CAN NOT READ\n");
         return -1;
     }
+
+    if (stream->lastop == 'w')
+    {
+        fflush(stream);
+    }
+
+    stream->lastop = 'r';
 
     //clear(ptr, nmemb);
     if (stream->eof)
@@ -367,9 +385,15 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
     {
-        printf("FILE CAN NOT WRITE\n");
         return -1;
     }
+
+    if (stream->lastop == 'r')
+    {
+        fpurge(stream);
+    }
+
+    stream->lastop = 'w';
 
     // number of byetes request by the user
     int bytesToWrite = size * nmemb;
@@ -412,10 +436,12 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
             memcpy(&stream->buffer[stream->pos], buf, bytesToWrite);
             stream->pos = stream->pos + bytesToWrite;
         }
-    }else {
-       
+    }
+    else
+    {
+
         char *buf = (char *)ptr;
-        write(stream->fd, buf, bytesToWrite);   
+        write(stream->fd, buf, bytesToWrite);
     }
 
     return 0;
@@ -425,7 +451,6 @@ int fgetc(FILE *stream)
 {
     if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
     {
-        printf("FILE CAN NOT READ\n");
         return -1;
     }
 
@@ -451,13 +476,12 @@ int fputc(int c, FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
     {
-        printf("FILE CAN NOT WRITE\n");
         return -1;
     }
 
     char buf[1];
     buf[0] = c;
-    //size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
+
     fwrite(buf, 1, 1, stream);
 
     return 0;
@@ -467,7 +491,7 @@ char *fgets(char *str, int size, FILE *stream)
 {
     if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
     {
-        printf("FILE CAN NOT READ\n");
+
         return NULL;
     }
 
@@ -490,14 +514,11 @@ int fputs(const char *str, FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
     {
-        printf("FILE CAN NOT WRITE\n");
+
         return -1;
     }
 
-    //size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
-
     fwrite(str, 1, strlen(str), stream);
-    //fflush(stream);
 
     return 0;
 }
@@ -509,26 +530,29 @@ int feof(FILE *stream)
 
 int fseek(FILE *stream, long offset, int whence)
 {
-    if(stream->buffer[0] != '\0'){
+    if (stream->buffer[0] != '\0')
+    {
         fflush(stream);
     }
 
-    if(whence == SEEK_CUR){
+    if (whence == SEEK_CUR)
+    {
         int newOffset = stream->actual_size - stream->pos;
-        
+
         lseek(stream->fd, offset - newOffset, whence);
-    }else{
+    }
+    else
+    {
         lseek(stream->fd, offset, whence);
     }
 
-    stream->pos = 0 ;
+    stream->pos = 0;
 
     fpurge(stream);
 
     stream->eof = false;
-    
-    return 0;
 
+    return 0;
 }
 
 int fclose(FILE *stream)
@@ -538,6 +562,12 @@ int fclose(FILE *stream)
         fflush(stream);
     }
 
+    if (stream->buffer != (char *)0 && stream->bufown == true)
+    {
+        delete stream->buffer;
+    }
     close(stream->fd);
+    delete stream;
+
     return 0;
 }
