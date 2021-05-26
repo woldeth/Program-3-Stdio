@@ -221,6 +221,10 @@ FILE *fopen(const char *path, const char *mode)
     return stream;
 }
 
+///--------------------------------- fpurge ------------------------------------
+// fpurge
+// Preconditions: None
+// Postconditions: clears the buffer for the streams
 int fpurge(FILE *stream)
 {
     memset(stream->buffer, '\0', stream->size);
@@ -228,14 +232,19 @@ int fpurge(FILE *stream)
     return 0;
 }
 
+///--------------------------------- fflush ------------------------------------
+// fflush
+// Preconditions: Must be in write mode
+// Postconditions: Prints whatever is in the buffer and clears it
 int fflush(FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
     {
         return -1;
     }
+    `
 
-    if (stream->eof)
+        if (stream->eof)
     {
         return EOF;
     }
@@ -247,12 +256,10 @@ int fflush(FILE *stream)
     return 0;
 }
 
-void clear(void *ptr, int size)
-{
-
-    memset(ptr, '\0', size);
-}
-
+///--------------------------------- fread ------------------------------------
+// fread
+// Preconditions: Must be in read mode
+// Postconditions: Prints whatever is in the buffer and clears it
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
 
@@ -381,6 +388,10 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
     return bytesRequest / size;
 }
 
+///--------------------------------- fwrite ------------------------------------
+// fwrite
+// Preconditions: Must be in write mode
+// Postconditions: Prints whatever is in the buffer and clears it
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
@@ -447,6 +458,10 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
     return 0;
 }
 
+///--------------------------------- fgetc ------------------------------------
+// fgetc
+// Preconditions: Must be in read mode
+// Postconditions: Reads just a single character from the buffer
 int fgetc(FILE *stream)
 {
     if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
@@ -472,6 +487,10 @@ int fgetc(FILE *stream)
     return EOF;
 }
 
+///--------------------------------- fputc ------------------------------------
+// fputc
+// Preconditions: Must be in write mode
+// Postconditions: Prints just a single character from the buffer
 int fputc(int c, FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
@@ -487,6 +506,10 @@ int fputc(int c, FILE *stream)
     return 0;
 }
 
+///--------------------------------- fgets ------------------------------------
+// fgets
+// Preconditions: Must be in read mode
+// Postconditions: Prints just a single string from the buffer
 char *fgets(char *str, int size, FILE *stream)
 {
     if (stream->flag == (O_WRONLY | O_CREAT | O_TRUNC) || stream->flag == (O_WRONLY | O_CREAT | O_APPEND))
@@ -510,6 +533,10 @@ char *fgets(char *str, int size, FILE *stream)
     return NULL;
 }
 
+///--------------------------------- fputs ------------------------------------
+// fputs
+// Preconditions: Must be in write mode
+// Postconditions: Writes out a single string from the buffer
 int fputs(const char *str, FILE *stream)
 {
     if (stream->flag == (O_RDONLY))
@@ -523,11 +550,19 @@ int fputs(const char *str, FILE *stream)
     return 0;
 }
 
+///--------------------------------- feof ------------------------------------
+// feof
+// Preconditions: None
+// Postconditions: Checks if it is the end of the file
 int feof(FILE *stream)
 {
     return stream->eof == true;
 }
 
+///--------------------------------- fseek ------------------------------------
+// fseek
+// Preconditions: None
+// Postconditions: Moves the curser of the field descriptor
 int fseek(FILE *stream, long offset, int whence)
 {
     if (stream->buffer[0] != '\0')
@@ -555,6 +590,10 @@ int fseek(FILE *stream, long offset, int whence)
     return 0;
 }
 
+///--------------------------------- fclose ------------------------------------
+// fclose
+// Preconditions: None
+// Postconditions: Closes the field descriptor.
 int fclose(FILE *stream)
 {
     if (stream->flag != (O_RDONLY))
